@@ -49,25 +49,18 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-                age:
-                  type: integer
+              $ref: '#/components/schemas/user'
       responses:
-        '201':
+        '200':
           description: Berhasil menambahkan user
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/user'
-        '400':
-          description: Request tidak valid
         '500':
           description: Server Gagal
+        '403':
+          description: Tidak diijinkan
 
   /users/{id}:
     get:
@@ -134,6 +127,10 @@ paths:
                   type: string
                 age:
                   type: integer
+                createdAt:
+                  type: string
+                updatedAt:
+                  type: string
       responses:
         '200':
           description: Berhasil diupdate

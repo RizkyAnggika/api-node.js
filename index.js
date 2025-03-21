@@ -45,20 +45,16 @@ app.get('/users/:id', (req, res) => {
 app.post('/users', (req, res) => {
     const { name, email, age } = req.body;
 
-    if (!name || !email || !age) {
-        res.status(400).send('Data tidak lengkap');
-        return;
-    }
-
     db.query(
-        'INSERT INTO user (name, email, age) VALUES (?, ?, ?)',
+        'INSERT INTO user (name, email, age, createdAt, updatedAt) VALUES (?, ?, ?, NOW(), NOW())',
         [name, email, age],
-        (err, result) => {
+        (err, results) => {
             if (err) {
                 res.status(500).send('Internal Server Error');
                 return;
             }
-            res.status(201).json({ message: 'User berhasil ditambahkan', id: result.insertId });
+
+            res.json({ message: 'User berhasil ditambahkan', id: results.insertId });
         }
     );
 });
@@ -80,25 +76,17 @@ app.delete('/users/:id', (req, res) => {
 
 app.put('/users/:id', (req, res) => {
     const { id } = req.params;
-    const { name, email, age } = req.body;
-
-    if (!name || !email || !age) {
-        res.status(400).send('Data tidak lengkap');
-        return;
-    }
+    const { name, email, age } = req.query;
 
     db.query(
-        'UPDATE user SET name = ?, email = ?, age = ? WHERE id = ?',
+        'UPDATE user SET name = ?, email = ?, age = ?, updatedAt = NOW() WHERE id = ?',
         [name, email, age, id],
-        (err, result) => {
+        (err, results) => {
             if (err) {
-                res.status(500).send('Internal Server Error');
+                res.status(500).json({ message: 'Internal Server Error' });
                 return;
             }
-            if (result.affectedRows === 0) {
-                res.status(404).send('User tidak ditemukan');
-                return;
-            }
+
             res.json({ message: 'User berhasil diperbarui' });
         }
     );
